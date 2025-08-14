@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutResdis - Hệ thống Authentication với Redis</title>
+    <meta name="description" content="Hệ thống đăng nhập an toàn với Redis và JWT token">
+    <link rel="stylesheet" href="css/site.css">
+    <link rel="stylesheet" href="css/icons.css">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo hover-glow" onclick="showDashboard()">
+                🔐 AutResdis
+            </a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="#" onclick="showLoginForm()">Đăng nhập</a></li>
+                    <li><a href="#" onclick="showRegisterForm()">Đăng ký</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Welcome Section -->
+            <div class="auth-container fade-in">
+                <div class="text-center mb-3">
+                    <div class="device-icon desktop pulse">🔐</div>
+                </div>
+                <h1 class="auth-title">Chào mừng đến với AutResdis</h1>
+                <p class="text-center mb-3">
+                    Hệ thống đăng nhập an toàn với Redis và JWT token
+                </p>
+                <div class="text-center">
+                    <button class="btn btn-primary hover-lift" onclick="showLoginForm()">Đăng nhập</button>
+                    <button class="btn btn-secondary hover-lift" onclick="showRegisterForm()">Đăng ký</button>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <a href="demo.html" class="btn btn-info">🧪 Demo & Test API</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center" style="padding: 2rem; color: rgba(255,255,255,0.8);">
+        <p>&copy; 2024 AutResdis. Hệ thống Authentication với Redis.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+</body>
+</html> 

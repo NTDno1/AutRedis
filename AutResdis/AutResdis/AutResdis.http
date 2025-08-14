@@ -1,0 +1,42 @@
+### Test User Registration
+POST {{baseUrl}}/api/user/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+### Test User Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+### Test Session Validation (requires token from login)
+GET {{baseUrl}}/api/auth/validate-session
+Authorization: Bearer {{authToken}}
+
+### Test Get Active Sessions (requires token from login)
+GET {{baseUrl}}/api/auth/active-sessions
+Authorization: Bearer {{authToken}}
+
+### Test Logout Other Devices (requires token from login)
+POST {{baseUrl}}/api/auth/logout-other-devices
+Authorization: Bearer {{authToken}}
+
+### Test User Profile (requires token from login)
+GET {{baseUrl}}/api/user/profile
+Authorization: Bearer {{authToken}}
+
+### Test Logout (requires token from login)
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{authToken}}
+
+### Variables
+@baseUrl = https://localhost:7001
+@authToken = your-jwt-token-here

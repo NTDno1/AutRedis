@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - AutResdis</title>
+    <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">🔐 AutResdis</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="#" onclick="showLoginForm()">Đăng nhập</a></li>
+                    <li><a href="#" onclick="showRegisterForm()">Đăng ký</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="dashboard">
+                <div class="dashboard-header">
+                    <h1 class="dashboard-title">Demo - Test API Endpoints</h1>
+                </div>
+                
+                <div class="mb-3">
+                    <h3>Test Authentication</h3>
+                    <div class="form-group">
+                        <label class="form-label">Username:</label>
+                        <input type="text" id="testUsername" class="form-input" value="testuser">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password:</label>
+                        <input type="password" id="testPassword" class="form-input" value="password123">
+                    </div>
+                    <button class="btn btn-primary" onclick="testLogin()">Test Login</button>
+                    <button class="btn btn-secondary" onclick="testRegister()">Test Register</button>
+                </div>
+
+                <div class="mb-3">
+                    <h3>Test Session Management</h3>
+                    <button class="btn btn-primary" onclick="testValidateSession()">Validate Session</button>
+                    <button class="btn btn-primary" onclick="testGetSessions()">Get Active Sessions</button>
+                    <button class="btn btn-danger" onclick="testLogoutOtherDevices()">Logout Other Devices</button>
+                </div>
+
+                <div class="mb-3">
+                    <h3>Test User Profile</h3>
+                    <button class="btn btn-primary" onclick="testGetProfile()">Get User Profile</button>
+                </div>
+
+                <div id="testResults" class="mb-3">
+                    <h3>Test Results:</h3>
+                    <pre id="resultsOutput" style="background: #f5f5f5; padding: 1rem; border-radius: 8px; overflow-x: auto;"></pre>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentToken = null;
+
+        function logResult(title, data) {
+            const output = document.getElementById('resultsOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            const result = `[${timestamp}] ${title}:\n${JSON.stringify(data, null, 2)}\n\n`;
+            output.textContent = result + output.textContent;
+        }
+
+        async function apiCall(endpoint, options = {}) {
+            const url = `${window.location.origin}/api/${endpoint}`;
+            
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                ...options
+            };
+
+            if (currentToken) {
+                defaultOptions.headers.Authorization = `Bearer ${currentToken}`;
+            }
+
+            try {
+                const response = await fetch(url, defaultOptions);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || `HTTP ${response.status}`);
+                }
+                
+                return data;
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        async function testLogin() {
+            try {
+                const username = document.getElementById('testUsername').value;
+                const password = document.getElementById('testPassword').value;
+                
+                const result = await apiCall('auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ username, password })
+                });
+                
+                if (result.success) {
+                    currentToken = result.token;
+                    logResult('Login Success', result);
+                } else {
+                    logResult('Login Failed', result);
+                }
+            } catch (error) {
+                logResult('Login Error', { error: error.message });
+            }
+        }
+
+        async function testRegister() {
+            try {
+                const username = document.getElementById('testUsername').value;
+                const password = document.getElementById('testPassword').value;
+                const email = 'test@example.com';
+                
+                const result = await apiCall('user/register', {
+                    method: 'POST',
+                    body: JSON.stringify({ username, email, password })
+                });
+                
+                logResult('Register Result', result);
+            } catch (error) {
+                logResult('Register Error', { error: error.message });
+            }
+        }
+
+        async function testValidateSession() {
+            try {
+                if (!currentToken) {
+                    logResult('Validate Session', { error: 'No token available. Please login first.' });
+                    return;
+                }
+                
+                const result = await apiCall('auth/validate-session');
+                logResult('Validate Session', result);
+            } catch (error) {
+                logResult('Validate Session Error', { error: error.message });
+            }
+        }
+
+        async function testGetSessions() {
+            try {
+                if (!currentToken) {
+                    logResult('Get Sessions', { error: 'No token available. Please login first.' });
+                    return;
+                }
+                
+                const result = await apiCall('auth/active-sessions');
+                logResult('Get Active Sessions', result);
+            } catch (error) {
+                logResult('Get Sessions Error', { error: error.message });
+            }
+        }
+
+        async function testLogoutOtherDevices() {
+            try {
+                if (!currentToken) {
+                    logResult('Logout Other Devices', { error: 'No token available. Please login first.' });
+                    return;
+                }
+                
+                const result = await apiCall('auth/logout-other-devices', { method: 'POST' });
+                logResult('Logout Other Devices', result);
+            } catch (error) {
+                logResult('Logout Other Devices Error', { error: error.message });
+            }
+        }
+
+        async function testGetProfile() {
+            try {
+                if (!currentToken) {
+                    logResult('Get Profile', { error: 'No token available. Please login first.' });
+                    return;
+                }
+                
+                const result = await apiCall('user/profile');
+                logResult('Get User Profile', result);
+            } catch (error) {
+                logResult('Get Profile Error', { error: error.message });
+            }
+        }
+
+        // Clear results on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('resultsOutput').textContent = 'Ready for testing...\n';
+        });
+    </script>
+</body>
+</html> 
