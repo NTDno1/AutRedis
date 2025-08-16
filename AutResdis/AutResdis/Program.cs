@@ -82,11 +82,11 @@ app.MapControllers();
 // Set default page
 app.MapFallbackToFile("index.html");
 
-// Ensure database is created
+// Ensure database is created and seeded
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.EnsureCreated();
+    DbInitializer.InitializeAsync(context).Wait();
 }
 
 app.Run();

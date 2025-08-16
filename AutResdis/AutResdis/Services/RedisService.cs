@@ -11,12 +11,14 @@ namespace AutResdis.Services
         private readonly IConnectionMultiplexer _redis;
         private readonly string _instanceName;
         private readonly int _defaultExpiryMinutes;
+        private readonly ILogger<RedisService> _logger;
 
-        public RedisService(IConnectionMultiplexer redis, IOptions<RedisSettings> redisSettings)
+        public RedisService(IConnectionMultiplexer redis, IOptions<RedisSettings> redisSettings, ILogger<RedisService> logger)
         {
             _redis = redis;
             _instanceName = redisSettings.Value.InstanceName;
             _defaultExpiryMinutes = redisSettings.Value.DefaultExpiryMinutes;
+            _logger = logger;
         }
 
         public async Task<bool> StoreUserSessionAsync(UserSession session)
@@ -41,10 +43,12 @@ namespace AutResdis.Services
                 await db.SetAddAsync(userSessionsKey, session.Token);
                 await db.KeyExpireAsync(userSessionsKey, expiry);
 
+                _logger.LogInformation("Session stored successfully for user {UserId} on device {DeviceId}", session.UserId, session.DeviceId);
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Failed to store session for user {UserId} on device {DeviceId}", session.UserId, session.DeviceId);
                 return false;
             }
         }
@@ -64,8 +68,9 @@ namespace AutResdis.Services
 
                 return null;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Failed to get session for token {Token}", token);
                 return null;
             }
         }
@@ -87,13 +92,15 @@ namespace AutResdis.Services
                     await db.KeyDeleteAsync(deviceKey);
                     await db.SetRemoveAsync(userSessionsKey, token);
 
+                    _logger.LogInformation("Session removed successfully for user {UserId} on device {DeviceId}", session.UserId, session.DeviceId);
                     return true;
                 }
 
                 return false;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Failed to remove session for token {Token}", token);
                 return false;
             }
         }

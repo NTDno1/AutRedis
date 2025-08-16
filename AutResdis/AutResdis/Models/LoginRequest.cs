@@ -16,4 +16,4 @@ namespace AutResdis.Models
         
         public string? IpAddress { get; set; }
     }
-} 
+}
